@@ -1,0 +1,32 @@
+{
+  "name": "nodestart",
+  "version": "1.0.0",
+  "description": "node start kit",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/dostokhan/nodestart.git"
+  },
+  "keywords": [
+    "node",
+    "express"
+  ],
+  "author": "Moniruzzaman Monir",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dostokhan/nodestart/issues"
+  },
+  "homepage": "https://github.com/dostokhan/nodestart#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "mongodb": "^2.2.33"
+  },
+  "devDependencies": {
+    "nodemon": "^1.12.1"
+  }
+}
