@@ -6,13 +6,19 @@ const renderErr = (res, err) => {
   res.end('Internal error.');
 };
 
-const renderNote = (res, content) => {
+const renderNote = (req, res, content, contentJson = false) => {
   console.log(content);
   // var htmlContent = this.message.marked(this.rawContent);
   // var responseContent = this.message.mustacheTemplate(html, { postContent: htmlContent });
 
-  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-  res.end(content);
+      // res.setHeader('Content-Type', 'application/json');
+  if (contentJson) {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.send(content);
+  } else {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify({ key: req.params.notename, content }));
+  }
 };
 
 module.exports = (server) => {
@@ -25,7 +31,7 @@ module.exports = (server) => {
     console.log(`read: ${path}`);
     noteReader(path)
       .then((content) => {
-        renderNote(res, content);
+        renderNote(req, res, content);
       }, (err) => {
         renderErr(res, err);
       });
@@ -36,7 +42,7 @@ module.exports = (server) => {
     const path = 'list.json';
     noteReader(path)
       .then((content) => {
-        renderNote(res, content);
+        renderNote(req, res, content, true);
       }, (err) => {
         renderErr(res, err);
       });
