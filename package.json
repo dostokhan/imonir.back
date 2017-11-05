@@ -23,6 +23,8 @@
   "homepage": "https://github.com/dostokhan/nodestart#readme",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "dotenv": "^4.0.0",
     "express": "^4.16.2",
     "mongodb": "^2.2.33",
     "mongoose": "^4.12.6"
