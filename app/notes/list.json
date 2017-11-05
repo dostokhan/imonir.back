@@ -2,8 +2,9 @@
   "notes": [
     {
       "key": "1",
-      "name": "test",
-      "date": "01-08-2011"
+      "title": "Just a test",
+      "path": "test",
+      "date": "2011-01-08"
     }
   ]
 }
