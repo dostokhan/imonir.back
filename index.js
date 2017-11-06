@@ -1,7 +1,10 @@
 const express = require('express');
 const dotenv = require('dotenv');
 
-const expressStatusMonitor = require('express-status-monitor');
+const auth = require('http-auth');
+// Set '' to config path to avoid middleware serving the html page
+// (path must be a string not equal to the wanted route)
+const statusMonitor = require('express-status-monitor')({ path: '' });
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const compression = require('compression');
@@ -16,7 +19,15 @@ const server = express();
 /**
  * Express configuration.
  */
-server.use(expressStatusMonitor());
+// server.use(expressStatusMonitor());
+const basic = auth.basic({realm: 'Monitor Area'}, function(user, pass, callback) {
+  callback(user === process.env.HTTP_AUTH_USER && pass === process.env.HTTP_AUTH_PASSWORD);
+});
+
+// use the "middleware only" property to manage websockets
+server.use(statusMonitor.middleware);
+server.get('/status', auth.connect(basic), statusMonitor.pageRoute);
+
 server.use(compression());
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
