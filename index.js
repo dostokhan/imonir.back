@@ -1,7 +1,10 @@
 const express = require('express');
+const dotenv = require('dotenv');
+
+const expressStatusMonitor = require('express-status-monitor');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const dotenv = require('dotenv');
+const compression = require('compression');
 // const MongoClient = require('mongodb').MongoClient;
 // const mongoose = require('mongoose');
 // const db = require('./config/db');
@@ -9,8 +12,15 @@ const dotenv = require('dotenv');
 dotenv.load({ path: 'config/.env.development' });
 
 const server = express();
-server.disable('x-powered-by');
 
+/**
+ * Express configuration.
+ */
+server.use(expressStatusMonitor());
+server.use(compression());
+server.use(bodyParser.json());
+server.use(bodyParser.urlencoded({ extended: true }));
+server.disable('x-powered-by');
 server.use(
   cors({
     origin(origin, cb) {
@@ -22,8 +32,6 @@ server.use(
     credentials: true,
   }),
 );
-
-server.use(bodyParser.urlencoded({ extended: true }));
 
 
 require('./app/routes')(server);
