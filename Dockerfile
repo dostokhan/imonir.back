@@ -3,20 +3,18 @@ FROM node:8
 
 # set environment
 ENV NPM_CONFIG_LOGLEVEL warn
-ARG env
-ENV NOTE_ENV $env
+# ARG env
+# ENV NOTE_ENV $env
+ENV APP=/home/app
 
-# add volume
-ADD . /code
+#copy dependency lock files
+COPY ./package.json $APP/package.json
+COPY ./yarn.lock $APP/yarn.lock
 
 # move to app dir
-WORKDIR /code
-
-EXPOSE 4000
+WORKDIR $APP
 
 # install dependencies for app
-# COPY package.json package.json
-# COPY npm-shrinkwrap.json npm-shrinkwrap.json
 RUN yarn install
 
 
@@ -25,7 +23,7 @@ CMD [ -f "/bin/bash" ] && if [ ${NODE_ENV} = production ]; \
   then \
   yarn build; \
   else \
-  yarn start; \
+  yarn install; yarn start; \
   fi
 
 

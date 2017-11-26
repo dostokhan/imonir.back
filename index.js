@@ -1,5 +1,8 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const db = require('sqlite');
+const Promise = require('bluebird');
+const passport = require('passport');
 
 const auth = require('http-auth');
 // Set '' to config path to avoid middleware serving the html page
@@ -13,6 +16,10 @@ const compression = require('compression');
 // const db = require('./config/db');
 //
 dotenv.load({ path: 'config/.env.development' });
+/**
+ * API keys and Passport configuration.
+ */
+const passportConfig = require('./config/passport');
 
 const server = express();
 
@@ -44,12 +51,35 @@ server.use(
   }),
 );
 
+server.use(passport.initialize());
+server.use(passport.session());
+
 
 require('./app/routes')(server);
 
-server.listen(process.env.PORT, () => {
-  console.warn('we are ready :)');
-});
+
+Promise.resolve()
+  // First, try to open the database
+  .then(() => db.open('./database.sqlite', { Promise, cached: true }))      // <=
+  // Update db schema to the latest version using SQL-based migrations
+  .then(() =>  {
+    if (process.env.NODE_ENV === 'production') {
+      return db.migrate();
+    }
+
+    return db.migrate({ force: 'last' });
+  })                  // <=
+  // Display error message if something went wrong
+  .catch((err) => console.error(err.stack))
+  // Finally, launch the Node.js app
+  .finally(() =>
+    server.listen(process.env.PORT, () => {
+      console.warn('we are ready :)');
+    })
+  );
+
+
+
 
 // mongoose.connect(db.url, { useMongoClient: true });
 // const dbConnection = mongoose.connection;

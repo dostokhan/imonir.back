@@ -2,8 +2,12 @@ version: '3'
 services:
   backend:
     build: .
+    environment:
+      NODE_ENV: development
     ports:
       - "8000:8000"
     volumes:
-     - .:/code
-        
+     - .:/home/app
+     - node_modules:/home/app/node_modules
+volumes: 
+  node_modules:
