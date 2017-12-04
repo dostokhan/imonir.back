@@ -12,6 +12,7 @@ passport.use(new GitHubStrategy({
   callbackURL: '/auth/github/callback',
   passReqToCallback: true,
 }, (req, accessToken, refreshToken, profile, done) => {
+  console.log('email ' + profile._json.email);
   if (profile._json.email === 'dostokhan@gmail.com') {
     // successfull login
     const payload = {

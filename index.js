@@ -11,18 +11,12 @@ const statusMonitor = require('express-status-monitor')({ path: '' });
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const compression = require('compression');
-// const MongoClient = require('mongodb').MongoClient;
-// const mongoose = require('mongoose');
-// const db = require('./config/db');
 //
 dotenv.load({ path: 'config/.env.development' });
-/**
- * API keys and Passport configuration.
- */
+
 const passportConfig = require('./config/passport');
 
 const server = express();
-
 /**
  * Express configuration.
  */
@@ -52,8 +46,6 @@ server.use(
 );
 
 server.use(passport.initialize());
-server.use(passport.session());
-
 
 require('./app/routes')(server);
 
@@ -77,20 +69,3 @@ Promise.resolve()
       console.warn('we are ready :)');
     })
   );
-
-
-
-
-// mongoose.connect(db.url, { useMongoClient: true });
-// const dbConnection = mongoose.connection;
-
-// dbConnection.on('error', console.error.bind(console, 'connection-error'));
-
-// dbConnection.once('open', () => {
-//   require('./app/routes')(server, {});
-
-//   server.listen(port, () => {
-//     console.warn('we are ready :)');
-//   });
-// });
-

@@ -3,9 +3,11 @@ services:
   backend:
     build: .
     environment:
-      NODE_ENV: development
-    ports:
-      - "8000:8000"
+      - NODE_ENV=development
+      - VIRTUAL_HOST=back.imonir.com
+      - VIRTUAL_PORT=8000
+    # ports:
+    #   - "8000:8000"
     volumes:
      - .:/home/app
      - node_modules:/home/app/node_modules
