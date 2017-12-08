@@ -3,9 +3,14 @@ services:
   backend:
     build: .
     environment:
-      - NODE_ENV=development
-      - VIRTUAL_HOST=back.imonir.com
-      - VIRTUAL_PORT=8000
+      - "NODE_ENV=development"
+      - "VIRTUAL_HOST=back.imonir.com"
+      - "VIRTUAL_PORT=8000"
+    expose:
+      - 8000
+    # networks:
+    #   - imonir
+    network_mode: "bridge"
     # ports:
     #   - "8000:8000"
     volumes:
@@ -13,3 +18,8 @@ services:
      - node_modules:/home/app/node_modules
 volumes: 
   node_modules:
+
+# networks:
+#   default:
+#     external:
+#       name: imonir
