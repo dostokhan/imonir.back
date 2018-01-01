@@ -1,28 +1,40 @@
 const github = require('octonode');
+const db = require('sqlite');
+// const logger = require('app/libs/logger');
 
-// Then we instantiate a client with or without a token (as show in a later section)
+const processCommits = (client, repos, since) => {
+  const params = {
+    since: since.toISOString(),
+  };
+  repos.forEach((repo) => {
+    const ghrepo = client.repo(repo);
 
-// const ghme           = client.me();
-// const ghuser         = client.user('pksunkara');
-// const ghrepo         = client.repo('pksunkara/hub');
-// const ghorg          = client.org('flatiron');
-// const ghissue        = client.issue('pksunkara/hub', 37);
-// const ghmilestone    = client.milestone('pksunkara/hub', 37);
-// const ghlabel        = client.label('pksunkara/hub', 'todo');
-// const ghpr           = client.pr('pksunkara/hub', 37);
-// const ghrelease      = client.release('pksunkara/hub', 37);
-// const ghgist         = client.gist();
-// const ghteam         = client.team(37);
-// const ghproject      = client.project('pksunkara/hub', 37);
-// const ghnotification = client.notification(37);
+    ghrepo.commits(params, (err, commits) => {
+      if (err) {
+        console.log('error');
+        console.log(err);
 
-const repo = {
-  fetchCommits: (fetchFrom) => {
+        return;
+      }
+
+      console.log(`total commits: ${commits.length}`);
+      commits.forEach((commitObj) => {
+        // console.log(`message: ${commitObj.commit.message}`);
+        // console.log(`repo: ${repo}`);
+        // console.log(`date: ${commitObj.commit.committer.date}`);
+        // console.log(commitObj.commit);
+        // console.log('-------------------------------');
+      });
+
+    });
+  });
+};
+
+const repomaster = {
+  fetchCommits: (since) => {
     const client = github.client(process.env.GITHUB_ACCESS_TOKEN);
     // get repos
     const ghuser = client.user('dostokhan');
-
-    const reposToFetch = [];
 
     ghuser.repos(null, (err, repos) => {
       if (err) {
@@ -32,48 +44,30 @@ const repo = {
       }
 
       console.log(`total repo: ${repos.length}`);
+      const reposToFetch = [];
+      let repoUpdatedAt;
       repos.forEach((repo) => {
-        if (!repo.archived && !repo.forked && repo.updated_at > fetchFrom) {
-          reposToFetch.push(repo.full_name);
-        }
-
-        console.log(`repo: ${repo.full_name} updated_at: ${repo.updated_at}`);
-        console.log(`archived: ${repo.archived} forked: ${repo.fork}`);
-
-
+        repoUpdatedAt = new Date(repo.updated_at);
         // need to fetch commits of repos for which
         // is not forked and is not archived
         // updated_at greater than last_fetch_time or 1jan, 2017
         //
+        if (!repo.archived && !repo.forked && repoUpdatedAt > since) {
+          reposToFetch.push(repo.full_name);
+        }
+        // console.log(`repo: ${repo.full_name} updated_at: ${repo.updated_at}`);
+        // console.log(`archived: ${repo.archived} forked: ${repo.fork}`);
       });
-      // console.log(repos);
+
+      console.log('fetch these repo');
+      console.log(reposToFetch);
+
+      if (reposToFetch.length > 0) {
+        processCommits(client, reposToFetch, since);
+      }
     });
-
-    // get commits
-    // const d = new Date();
-    // const until = d.toISOString();
-    // d.setDate(d.getDate() - 90);
-    // const since = d.toISOString();
-    // const params = {
-    //   since,
-    //   until,
-    // };
-    // const ghrepo = client.repo('dostokhan/utils');
-    // ghrepo.commits(params, (err, commits) => {
-    //   if (err) {
-    //     console.log('error');
-    //     console.log(err);
-
-    //     return;
-    //   }
-
-    //   console.log(`total commits: ${commits.length}`);
-    //   commits.forEach((commit) => {
-    //     console.log(`commit: ${commit.message}`);
-    //   })
-    // });
   },
 };
 
 
-module.exports = repo;
+module.exports = repomaster;

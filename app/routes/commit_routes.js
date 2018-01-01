@@ -1,9 +1,10 @@
 const db = require('sqlite');
-const repo = require('../libs/repo');
+const repo = require('app/libs/repo');
 
 
 const fetchNeeded = (fetchFrom) => {
-  console.log(`fetchFrom: ${fetchFrom}`);
+  console.log(`fetchFrom: ${fetchFrom.toISOString()}`);
+  repo.fetchCommits(fetchFrom);
 
   // check if fetching commit is necessary ?
   // 24 hours after last fetch &&
@@ -34,7 +35,7 @@ const lookupCommit = async (req, res, next) => {
     if (commits.length === 0) {
       // console.log('first fetch');
       d = new Date('January 1 2017');
-      fetchNeeded(d.toISOString());
+      fetchNeeded(d);
     } else {
       // console.log('updated fetch');
       d = new Date(commits[0].datetime);
@@ -42,7 +43,7 @@ const lookupCommit = async (req, res, next) => {
       current.setDate(d.getDate() - 1);
 
       if (d < current) {
-        fetchNeeded(d.toISOString());
+        fetchNeeded(d);
       }
     }
 
