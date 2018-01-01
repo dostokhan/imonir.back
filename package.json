@@ -4,7 +4,7 @@
   "description": "node start kit",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "NODE_PATH=. nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -38,7 +38,8 @@
     "passport": "^0.4.0",
     "passport-facebook-token": "^3.3.0",
     "passport-github": "^1.1.0",
-    "sqlite": "^2.8.0"
+    "sqlite": "^2.8.0",
+    "winston": "^2.4.0"
   },
   "devDependencies": {
     "nodemon": "^1.12.1"
