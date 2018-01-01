@@ -17,12 +17,12 @@ const github = require('octonode');
 // const ghnotification = client.notification(37);
 
 const repo = {
-  fetchCommits: () => {
+  fetchCommits: (fetchFrom) => {
     const client = github.client(process.env.GITHUB_ACCESS_TOKEN);
-
-
     // get repos
     const ghuser = client.user('dostokhan');
+
+    const reposToFetch = [];
 
     ghuser.repos(null, (err, repos) => {
       if (err) {
@@ -33,6 +33,10 @@ const repo = {
 
       console.log(`total repo: ${repos.length}`);
       repos.forEach((repo) => {
+        if (!repo.archived && !repo.forked && repo.updated_at > fetchFrom) {
+          reposToFetch.push(repo.full_name);
+        }
+
         console.log(`repo: ${repo.full_name} updated_at: ${repo.updated_at}`);
         console.log(`archived: ${repo.archived} forked: ${repo.fork}`);
 
@@ -41,7 +45,7 @@ const repo = {
         // is not forked and is not archived
         // updated_at greater than last_fetch_time or 1jan, 2017
         //
-      })
+      });
       // console.log(repos);
     });
 

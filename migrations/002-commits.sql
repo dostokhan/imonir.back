@@ -2,15 +2,15 @@
 -- Up
 --------------------------------------------------------------------------------
 
-CREATE TABLE Commit (
+CREATE TABLE Work (
   id   INTEGER PRIMARY KEY,
-  commit TEXT    NOT NULL,
-  repo TEXT NOT NULL,
-  date TEXT NOT NULL,
+  message TEXT    NOT NULL,
+  repo TEXT    NOT NULL,
+  date TEXT NOT NULL
 );
 
 --------------------------------------------------------------------------------
 -- Down
 --------------------------------------------------------------------------------
 
-DROP TABLE Commit;
+DROP TABLE Work;
