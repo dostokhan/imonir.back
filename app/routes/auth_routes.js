@@ -1,18 +1,47 @@
 const passport = require('passport');
+const jwt = require('jsonwebtoken');
+
+const createToken = payload =>
+  (
+    jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      {
+        expiresIn: 60 * 120,
+      },
+    )
+  );
+
+const generateToken = (req, res, next) => {
+  req.token = createToken(req.auth);
+  next();
+};
+
+const sendToken = (req, res) => {
+  // res.setHeader('mj-token', req.token);
+  res.status(200).send({ token: req.token });
+};
 
 module.exports = (server) => {
-  // fetch note
-  server.get('/auth',
-    passport.authenticate('github', { session: false }));
+  server.route('/auth/facebook')
+    .post((req, res, next) => {
+      console.log(`access_token: ${req.body.access_token}`);
 
-  // list of notes, latest 10
-  // server.get('/note', (req, res) => {
-  //   const path = 'list.json';
-  //   noteReader(path)
-  //     .then((content) => {
-  //       renderNote(req, res, content, true);
-  //     }, (err) => {
-  //       renderErr(res, err);
-  //     });
-  // });
+      // res.status(200).send({ oka: 'bye' });
+      // next();
+      passport.authenticate('facebook-token', { session: false }, (user) => {
+        console.log(user);
+
+        if (!user || user.id !== process.env.FACEBOOK_USERID) {
+          return res.send(401, 'User Not Authenticated');
+        }
+
+        // prepare token for API
+        req.auth = {
+          id: user.id, // req.user.id
+        };
+
+        next();
+      })(req, res, next);
+    }, generateToken, sendToken);
 };

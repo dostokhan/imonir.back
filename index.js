@@ -21,7 +21,7 @@ const server = express();
  * Express configuration.
  */
 // server.use(expressStatusMonitor());
-const basic = auth.basic({realm: 'Monitor Area'}, function(user, pass, callback) {
+const basic = auth.basic({ realm: 'Monitor Area' }, (user, pass, callback) => {
   callback(user === process.env.HTTP_AUTH_USER && pass === process.env.HTTP_AUTH_PASSWORD);
 });
 
@@ -41,6 +41,8 @@ server.use(
         : [];
       cb(null, whitelist.includes(origin));
     },
+    methods: 'GET, POST, PATCH',
+    // exposeHeaders: ['mj-token'],
     credentials: true,
   }),
 );
