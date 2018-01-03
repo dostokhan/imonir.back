@@ -1,25 +1,7 @@
 const db = require('sqlite');
 const repo = require('app/libs/repo');
-
-
-const fetchNeeded = (fetchFrom) => {
-  console.log(`fetchFrom: ${fetchFrom.toISOString()}`);
-  repo.fetchCommits(fetchFrom);
-
-  // check if fetching commit is necessary ?
-  // 24 hours after last fetch &&
-  // currently no running/scheduled task
-
-
-  //
-  // var job = queue.create('test', {
-  //   title: 'job ran at ' + Date.now()
-  // }).save( function(err){
-  //   if( !err ) console.log( job.id );
-  // });
-
-  // repo.fetchCommits();
-};
+const logger = require('app/libs/logger');
+// const queue = require('app/libs/queue');
 
 const lookupCommit = async (req, res, next) => {
   // fetch 10 latest commits from db
@@ -33,9 +15,10 @@ const lookupCommit = async (req, res, next) => {
     // check if fetch needed ?
     let d;
     if (commits.length === 0) {
+      logger.info('No Commit found');
       // console.log('first fetch');
       d = new Date('January 1 2017');
-      fetchNeeded(d);
+      repo.fetchIfNeeded(d);
     } else {
       // console.log('updated fetch');
       d = new Date(commits[0].datetime);
@@ -43,7 +26,7 @@ const lookupCommit = async (req, res, next) => {
       current.setDate(d.getDate() - 1);
 
       if (d < current) {
-        fetchNeeded(d);
+        repo.fetchIfNeeded(d);
       }
     }
 
@@ -57,3 +40,18 @@ module.exports = (server) => {
   // fetch note
   server.get('/commit/', lookupCommit);
 };
+
+// const fetchNeeded = (fetchFrom) => {
+//   // repo.fetchCommits(fetchFrom);
+
+//   // queue.create('justchill', {
+//   //     title: 'Welcome to the site',
+//   //     to: 'user@example.com',
+//   //     template: 'welcome-email'
+//   // }).priority('high').attempts(5).save();
+
+//   // check if fetching commit is necessary ?
+//   // 24 hours after last fetch &&
+//   // currently no running/scheduled task
+// };
+
