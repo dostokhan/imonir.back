@@ -5,7 +5,6 @@ const db = require('sqlite');
 
 const renderErr = (res, err) => {
   console.error(err);
-
   // res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
   // return res.json({ error: 'Could not retrieve Note' });
 
@@ -13,20 +12,6 @@ const renderErr = (res, err) => {
   res.end('chotar !.');
 };
 
-const renderNote = (req, res, content, contentJson = false) => {
-  console.log(content);
-  // var htmlContent = this.message.marked(this.rawContent);
-  // var responseContent = this.message.mustacheTemplate(html, { postContent: htmlContent });
-
-      // res.setHeader('Content-Type', 'application/json');
-  if (contentJson) {
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.send(content);
-  } else {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({ key: req.params.notename, content }));
-  }
-};
 
 const authenticate = (credentialsRequired = true) =>
 
@@ -69,14 +54,16 @@ const createNote = async (req, res, next) => {
 
 const lookupNote = async (req, res, next) => {
   const noteSlug = req.params.noteslug;
-  const sql = 'SELECT * FROM note WHERE slug = ?';
+  const selector = !isNaN(noteSlug) ?
+    'id = ?' : 'slug = ?';
+  const sql = `SELECT * FROM note WHERE ${selector}`;
 
-  console.log(`NoteSlug: ${noteSlug}`);
+  console.log(`query: ${sql}`);
+
   try {
     const note = await db.all(sql, noteSlug); // db.run(sql, noteId);
     if (note.length === 0) {
-      res.statusCode = 404;
-      return res.send({ error: 'Note not found' });
+      res.status(404).send({ error: 'Note not found' });
     }
 
     console.log(note);
@@ -86,51 +73,66 @@ const lookupNote = async (req, res, next) => {
     renderErr(res, err);
   }
 };
-const lookupNoteContent = async (req, res, next) => {
-  const noteSlug = req.params.noteslug;
+const lookupNoteContent = async (req, res) => {
+  const noteSlug = req.note.slug; // req.params.noteslug;
 
   console.log(`read: ${noteSlug}`);
 
   noteReader(noteSlug)
     .then((content) => {
-      // renderNote(req, res, content);
-      res.send(JSON.stringify({ note: req.note, content, }));
+      res.status(200)
+        .send(JSON.stringify({ note: req.note, content }));
     }, (err) => {
       renderErr(res, err);
     });
 };
 
 const updateNote = async (req, res, next) => {
-
   const note = req.body.note;
   const noteId = req.params.id;
   let sql = 'UPDATE note SET';
-
-  console.log(req.auth);
+  // let titleChanged = false;
+  let slug = '';
 
   Object.keys(note).forEach((key) => {
-    sql += ` ${key} = ${note[key]},`;
+    if (key === 'title') {
+      // titleChanged = true;
+      slug = helper.titleToSlug(note[key]);
+      sql += ` slug = '${slug}',`;
+    }
+    if (key !== 'content') {
+      sql += ` ${key} = '${note[key]}',`;
+    }
   });
 
   sql = sql.slice(0, -1);
   sql += ' WHERE id = ?';
 
   console.log(`query: ${sql}`);
-  // const sql = 'UPDATE note SET WHERE id = ?';
 
   console.log(`NoteId: ${noteId}`);
 
   try {
-    const note = await db.all(sql, noteId); // db.run(sql, noteId);
-    if (!note) {
-      res.statusCode = 404;
-      return res.json({ error: 'Note not found' });
+    const updatedNote = await db.all(sql, noteId); // db.run(sql, noteId);
+    if (!updatedNote) {
+      return res.status(404).send({ error: 'Note not found' });
+    } else {
+      // if (titleChanged) {
+      //   // remove old note file
+      //   deleteNote(req.note.slug);
+      // }
 
+      if (note.content) {
+      noteWriter(slug, note.content)
+        .then(() => {
+          return res.status(200).send({ noteId });
+        }, (err) => {
+          next(err);
+        });
+      } else {
+        return res.status(200).send({ noteId });
+      }
     }
-    console.log(note);
-
-    req.statusCode = 200;
-    res.json({ id: noteId });
   } catch (err) {
     console.error(err);
     res.statusCode = 500;

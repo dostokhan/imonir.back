@@ -3,6 +3,12 @@ const path = require('path');
 
 const notePath = relativePath => `${path.join(__dirname, '../notes/')}${relativePath}.md`;
 
+const deleteNote = (relativePath) => {
+  const fullPath = notePath(relativePath);
+
+  fs.unlink(fullPath);
+};
+
 const noteReader = relativePath =>
   new Promise((resolve, reject) => {
     const fullPath = notePath(relativePath);
@@ -30,6 +36,7 @@ const noteWriter = (relativePath, content) =>
   });
 
 module.exports = {
+  deleteNote,
   noteReader,
   noteWriter,
 };
