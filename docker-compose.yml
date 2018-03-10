@@ -11,11 +11,11 @@ services:
       # - "REDIS_HOST=redis"
     expose:
       - 8000
-    # networks:
-    #   - imonir
-    network_mode: "bridge"
     # ports:
     #   - "8000:8000"
+    networks:
+      - imonir
+    # network_mode: "bridge"
     volumes:
      - .:/home/app
      - node_modules:/home/app/node_modules
@@ -29,7 +29,6 @@ volumes:
   node_modules:
   # redis_data:
 
-# networks:
-#   default:
-#     external:
-#       name: imonir
+networks:
+  imonir:
+    external: true
