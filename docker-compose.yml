@@ -4,11 +4,6 @@ services:
     build: .
     # depends_on:
     #   - redis
-    environment:
-      - "NODE_ENV=development"
-      - "VIRTUAL_HOST=back.imonir.com"
-      - "VIRTUAL_PORT=8000"
-      # - "REDIS_HOST=redis"
     expose:
       - 8000
     # ports:

@@ -1,0 +1,7 @@
+version: '3'
+services:
+  backend:
+    environment:
+      - "NODE_ENV=production"
+      - "VIRTUAL_HOST=back.imonir.com"
+      - "VIRTUAL_PORT=8000"
