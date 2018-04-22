@@ -1,5 +1,5 @@
 {
-  "name": "nodestart",
+  "name": "imonir.back",
   "version": "1.0.0",
   "description": "node start kit",
   "main": "index.js",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/dostokhan/nodestart.git"
+    "url": "git+ssh://git@github.com/dostokhan/imonir.back.git"
   },
   "keywords": [
     "node",
@@ -19,9 +19,9 @@
   "author": "Moniruzzaman Monir",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/dostokhan/nodestart/issues"
+    "url": "https://github.com/dostokhan/imonir.back/issues"
   },
-  "homepage": "https://github.com/dostokhan/nodestart#readme",
+  "homepage": "https://github.com/dostokhan/imonir.back#readme",
   "dependencies": {
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
