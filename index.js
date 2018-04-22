@@ -12,7 +12,11 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const compression = require('compression');
 //
-dotenv.load({ path: 'config/.env.development' });
+const envFile = process.env.NODE_ENV === 'production' ?
+  'config/.env.production' :
+  'config/.env.development';
+
+dotenv.load({ path: envFile });
 
 const passportConfig = require('./config/passport');
 
