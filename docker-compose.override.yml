@@ -3,5 +3,5 @@ services:
   backend:
     environment:
       - "NODE_ENV=development"
-      - "VIRTUAL_HOST=back.imonir.com"
+      - "VIRTUAL_HOST=local.api.imonir.com"
       - "VIRTUAL_PORT=8000"
