@@ -25,12 +25,16 @@ const noteReader = relativePath =>
 const noteWriter = (relativePath, content) =>
   new Promise((resolve, reject) => {
     const fullPath = notePath(relativePath);
+    console.log(`Writing Note file: ${fullPath}`);
 
     fs.writeFile(fullPath, content, (err) => {
       if (err) {
+        console.log('NOTE WRITE FAIL');
+        console.log(err);
         return reject(err);
       }
 
+      console.log('NOTE WRITE SUCCESS');
       return resolve();
     });
   });

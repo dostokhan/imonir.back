@@ -87,56 +87,76 @@ const lookupNoteContent = async (req, res) => {
     });
 };
 
-const updateNote = async (req, res, next) => {
+const updateNote = async (req, res) => {
   const note = req.body.note;
   const noteId = req.params.id;
   let sql = 'UPDATE note SET';
+  let needNoteTableUpdate = false;
   // let titleChanged = false;
   let slug = '';
+  const responseObj = {};
+  let statusCode = 200;
+  const sendResponse = () => res.status(statusCode).send(responseObj);
+  const updateNoteFile = (noteSlug, noteContent) =>
+    noteWriter(noteSlug, noteContent).then(
+      () => {
+        console.log('update note CONTENT written to note file');
+        console.log(noteContent);
+        responseObj.noteId = noteId;
+        return sendResponse();
+      },
+      (err) => {
+        console.log(err);
+        statusCode = 500;
+        responseObj.msg = 'tails on fire';
+        return sendResponse();
+      });
 
   Object.keys(note).forEach((key) => {
+    console.log(`key: ${key}`);
+
     if (key === 'title') {
       // titleChanged = true;
       slug = helper.titleToSlug(note[key]);
       sql += ` slug = '${slug}',`;
-    }
-    if (key !== 'content') {
+      needNoteTableUpdate = true;
+    } else if (key !== 'content') {
       sql += ` ${key} = '${note[key]}',`;
+      needNoteTableUpdate = true;
     }
   });
 
   sql = sql.slice(0, -1);
   sql += ' WHERE id = ?';
-
   console.log(`query: ${sql}`);
-
   console.log(`NoteId: ${noteId}`);
 
-  try {
-    const updatedNote = await db.all(sql, noteId); // db.run(sql, noteId);
-    if (!updatedNote) {
-      return res.status(404).send({ error: 'Note not found' });
-    } else {
-      // if (titleChanged) {
-      //   // remove old note file
-      //   deleteNote(req.note.slug);
-      // }
 
-      if (note.content) {
-      noteWriter(slug, note.content)
-        .then(() => {
-          return res.status(200).send({ noteId });
-        }, (err) => {
-          next(err);
-        });
+  if (needNoteTableUpdate) {
+    try {
+      const updatedNote = await db.all(sql, noteId); // db.run(sql, noteId);
+      if (!updatedNote) {
+        statusCode = 404;
+        responseObj.msg = 'no idea';
       } else {
-        return res.status(200).send({ noteId });
+        // if (titleChanged) {
+        //   // remove old note file
+        //   deleteNote(req.note.slug);
+        // }
+        if (note.content) {
+          return updateNoteFile(slug, note.content);
+        }
+
+        responseObj.noteId = noteId;
+        return sendResponse();
       }
+    } catch (err) {
+      statusCode = 500;
+      responseObj.msg = 'tails on fire';
+      return sendResponse();
     }
-  } catch (err) {
-    console.error(err);
-    res.statusCode = 500;
-    return res.json({ error: 'Could not retrieve Note' });
+  } else if (note.content) {
+    return updateNoteFile(slug, note.content);
   }
 };
 
