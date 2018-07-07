@@ -2,6 +2,7 @@ version: '3'
 services:
   backend:
     environment:
-      - "NODE_ENV=production"
-      - "VIRTUAL_HOST=api.imonir.com"
-      - "VIRTUAL_PORT=8000"
+      NODE_ENV: "production"
+      VIRTUAL_HOST: "api.imonir.com"
+      LETSENCRYPT_HOST: "api.imonir.com"
+      LETSENCRYPT_EMAIL: "imonir.com@gmail.com"
