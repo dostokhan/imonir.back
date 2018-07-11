@@ -1,3 +1,3 @@
 #! /bin/bash
 
-scp ./config/.env.production imonir:~/work/imonir.back/config/
+scp -r ./config imonir:~/work/imonir.back/config

@@ -1,7 +1,6 @@
 up.sh
 down.sh
 database.sqlite
-config/db.js
 
 *.log
 
