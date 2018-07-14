@@ -9,8 +9,10 @@ const auth = require('http-auth');
 // (path must be a string not equal to the wanted route)
 const statusMonitor = require('express-status-monitor')({ path: '' });
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const compression = require('compression');
+const morgan = require('morgan');
 //
 const envFile = process.env.NODE_ENV === 'production' ?
   'config/.env.production' :
@@ -18,7 +20,7 @@ const envFile = process.env.NODE_ENV === 'production' ?
 
 dotenv.load({ path: envFile });
 
-const passportConfig = require('./config/passport');
+require('./config/passport');
 
 const server = express();
 /**
@@ -34,9 +36,11 @@ server.use(statusMonitor.middleware);
 server.get('/status', auth.connect(basic), statusMonitor.pageRoute);
 
 server.use(compression());
+server.use(cookieParser());
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
 server.disable('x-powered-by');
+server.use(morgan('combined'));
 server.use(
   cors({
     origin(origin, cb) {
@@ -58,20 +62,19 @@ require('./app/routes')(server);
 
 Promise.resolve()
   // First, try to open the database
-  .then(() => db.open('./database.sqlite', { Promise, cached: true }))      // <=
+  .then(() => db.open('./database.sqlite', { Promise, cached: true }))
   // Update db schema to the latest version using SQL-based migrations
-  .then(() =>  {
+  .then(() => {
     if (process.env.NODE_ENV === 'production') {
       return db.migrate();
     }
 
     return db.migrate({ force: 'last' });
-  })                  // <=
+  })
   // Display error message if something went wrong
-  .catch((err) => console.error(err.stack))
+  .catch(err => console.error(err.stack))
   // Finally, launch the Node.js app
   .finally(() =>
     server.listen(process.env.PORT, () => {
       console.warn('we are ready :)');
-    })
-  );
+    }));

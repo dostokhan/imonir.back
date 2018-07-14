@@ -14,12 +14,13 @@ const renderErr = (res, err) => {
 
 
 const authenticate = (credentialsRequired = true) =>
-
   expressJwt({
     secret: process.env.JWT_SECRET,
     requestProperty: 'auth',
     credentialsRequired,
     getToken: (req) => {
+      console.log(`mj-token: ${req.headers['mj-token']}`);
+
       if (req.headers['mj-token']) {
         return req.headers['mj-token'];
       }
@@ -167,6 +168,8 @@ module.exports = (server) => {
   server.get('/note', authenticate(false), async (req, res, next) => {
     const sql = req.auth ?
       'SELECT * FROM Note LIMIT 10' : 'SELECT * FROM Note WHERE isPublished=1  LIMIT 10';
+    console.log(req.auth);
+    console.log(sql);
 
     try {
       const notes = await db.all(sql); // <=

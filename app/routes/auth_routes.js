@@ -7,7 +7,7 @@ const createToken = payload =>
       payload,
       process.env.JWT_SECRET,
       {
-        expiresIn: 60 * 120,
+        expiresIn: '1h',
       },
     )
   );
@@ -18,6 +18,7 @@ const generateToken = (req, res, next) => {
 };
 
 const sendToken = (req, res) => {
+  console.log(`jwt: ${req.token}`);
   // res.setHeader('mj-token', req.token);
   res.status(200).send({ token: req.token });
 };
