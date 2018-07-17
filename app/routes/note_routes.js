@@ -87,7 +87,9 @@ const lookupNoteContent = async (req, res) => {
       renderErr(res, err);
     });
 };
+// const deleteNote = async (req, res) => {
 
+// };
 const updateNote = async (req, res) => {
   const note = req.body.note;
   const noteId = req.params.id;
@@ -181,4 +183,5 @@ module.exports = (server) => {
 
   server.post('/note', authenticate(), createNote);
   server.patch('/note/:id', authenticate(), updateNote);
+  // server.delete('/note/:id', authenticate(), deleteNote);
 };
