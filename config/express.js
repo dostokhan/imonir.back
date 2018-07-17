@@ -10,7 +10,9 @@ const cookieParser = require('cookie-parser');
 // const helmet = require('helmet');
 // INSTALL END
 
-const { logs } = require('./vars');
+const {
+  corsOrigin,
+} = require('./vars');
 
 // discard below line and uncomment following line
 require('./passport');
@@ -45,12 +47,12 @@ server.use(compression());
 server.use(
   cors({
     origin(origin, cb) {
-      const whitelist = process.env.CORS_ORIGIN
-        ? process.env.CORS_ORIGIN.split(',')
+      const whitelist = corsOrigin
+        ? corsOrigin.split(',')
         : [];
       cb(null, whitelist.includes(origin));
     },
-    methods: 'GET, POST, PATCH',
+    methods: 'GET, POST, PATCH, DELETE',
     // exposeHeaders: ['mj-token'],
     credentials: true,
   }),
@@ -61,9 +63,6 @@ server.use(passport.initialize());
 // passport.use('jwt', strategies.jwt);
 // passport.use('facebook', strategies.facebook);
 // passport.use('google', strategies.google);
-
-
-
 
 
 module.exports = server;

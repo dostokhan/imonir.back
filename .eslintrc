@@ -1,0 +1,67 @@
+{
+    "extends": "airbnb",
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "settings": {
+        "import/parser": "babel-eslint",
+        "import/cache": {
+            "lifetime": 5
+        },
+    },
+    "rules": {
+        "indent": ["error", 2, {"SwitchCase": 1}],
+        "no-console": "off",
+        "no-debugger": "off",
+        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+        "react/forbid-prop-types": "off",
+        "react/prefer-stateless-function": "off",
+        "class-methods-use-this": "off",
+        'no-underscore-dangle': "off",
+        'jsx-a11y/no-static-element-interactions': [
+          'warn',
+          {
+            handlers: [
+              'onClick',
+              'onMouseDown',
+              'onMouseUp',
+              'onKeyPress',
+              'onKeyDown',
+              'onKeyUp',
+              'onMouseOver',
+            ],
+          },
+        ],
+        "import/no-extraneous-dependencies": "off",
+        "import/no-unresolved": "off",
+        "import/extensions": "off",
+    }, 
+    "globals": {
+        "DEVMODE": true,
+        "PRODUCTION": true,
+        "DEBUG": true,
+        "DEBUG_RENDER": true,
+        "API": true,
+        "API_BACK": true,
+        "XMPP_DOMAIN": true,
+        "localStorage": true,
+        "window": true,
+        "document": true,
+        "angular": true,
+        "$": true,
+        "jQuery": true,
+        "JitsiMeetJS": true,
+        "Strophe": true,
+        "OpenfireMeetings": true,
+        "$pres": true,
+        "fabric": true,
+
+        /* testing related globals */
+        "describe": true,
+        "beforeEach": true,
+        "inject": true,
+        "expect": true,
+        "it": true
+    }
+}

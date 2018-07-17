@@ -1,4 +1,4 @@
-# create image based on official node 6 image from Docker
+# create image based on official node 8 image from Docker
 FROM node:8
 
 # set environment
@@ -15,7 +15,7 @@ COPY ./yarn.lock $APP/yarn.lock
 WORKDIR $APP
 
 # install dependencies for app
-RUN yarn install
+RUN yarn --pure-lockfile
 
 
 # run app
@@ -23,7 +23,7 @@ CMD [ -f "/bin/bash" ] && if [ ${NODE_ENV} = production ]; \
   then \
   yarn build; \
   else \
-  yarn install; yarn start; \
+  yarn --pure-lockfile; yarn start; \
   fi
-
+# yarn install; yarn start; \
 

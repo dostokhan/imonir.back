@@ -2,7 +2,9 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const {
   jwtSecret,
+  fbUserId,
 } = require('../../config/vars');
+
 
 const createToken = payload =>
   (
@@ -34,10 +36,13 @@ module.exports = (server) => {
       // res.status(200).send({ oka: 'bye' });
       // next();
       passport.authenticate('facebook-token', { session: false }, (user) => {
-        console.log(user);
+        console.log(user.id);
 
-        if (!user || user.id !== process.env.FACEBOOK_USERID) {
-          return res.send(401, 'User Not Authenticated');
+        console.log(fbUserId);
+        const fbUsers = fbUserId ? fbUserId.split(',') : [];
+        console.log(fbUsers);
+        if (!user || !fbUsers.includes(user.id)) {
+          return res.send(401, { msg: 'User Not Authenticated' });
         }
 
         // prepare token for API

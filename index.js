@@ -1,4 +1,3 @@
-const dotenv = require('dotenv');
 const db = require('sqlite');
 const Promise = require('bluebird');
 
@@ -6,30 +5,28 @@ const auth = require('http-auth');
 // Set '' to config path to avoid middleware serving the html page
 // (path must be a string not equal to the wanted route)
 const statusMonitor = require('express-status-monitor')({ path: '' });
-const cookieParser = require('cookie-parser');
-//
-const envFile = process.env.NODE_ENV === 'production' ?
-  'config/.env.production' :
-  'config/.env.development';
 
-dotenv.load({ path: envFile });
-
-
-const server = require('./config/express');
 /**
  * Express configuration.
  */
+const server = require('./config/express');
+
+
+const {
+  authUser,
+  authPassword,
+  env,
+  port,
+} = require('./config/vars');
+
 // server.use(expressStatusMonitor());
 const basic = auth.basic({ realm: 'Monitor Area' }, (user, pass, callback) => {
-  callback(user === process.env.HTTP_AUTH_USER && pass === process.env.HTTP_AUTH_PASSWORD);
+  callback(user === authUser && pass === authPassword);
 });
 
 // use the "middleware only" property to manage websockets
 server.use(statusMonitor.middleware);
 server.get('/status', auth.connect(basic), statusMonitor.pageRoute);
-
-server.use(cookieParser());
-server.disable('x-powered-by');
 
 
 require('./app/routes')(server);
@@ -40,7 +37,7 @@ Promise.resolve()
   .then(() => db.open('./database.sqlite', { Promise, cached: true }))
   // Update db schema to the latest version using SQL-based migrations
   .then(() => {
-    if (process.env.NODE_ENV === 'production') {
+    if (env === 'production') {
       return db.migrate();
     }
 
@@ -50,6 +47,6 @@ Promise.resolve()
   .catch(err => console.error(err.stack))
   // Finally, launch the Node.js app
   .finally(() =>
-    server.listen(process.env.PORT, () => {
+    server.listen(port, () => {
       console.warn('we are ready :)');
     }));
