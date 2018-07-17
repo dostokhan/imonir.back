@@ -2,6 +2,9 @@ const { noteReader, noteWriter } = require('../libs/noteReader.js');
 const helper = require('../libs/helper');
 const expressJwt = require('express-jwt');
 const db = require('sqlite');
+const {
+  jwtSecret,
+} = require('../../config/vars');
 
 const renderErr = (res, err) => {
   console.error(err);
@@ -15,7 +18,7 @@ const renderErr = (res, err) => {
 
 const authenticate = (credentialsRequired = true) =>
   expressJwt({
-    secret: process.env.JWT_SECRET,
+    secret: jwtSecret,
     requestProperty: 'auth',
     credentialsRequired,
     getToken: (req) => {

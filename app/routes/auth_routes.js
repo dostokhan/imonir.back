@@ -1,11 +1,14 @@
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
+const {
+  jwtSecret,
+} = require('../../config/vars');
 
 const createToken = payload =>
   (
     jwt.sign(
       payload,
-      process.env.JWT_SECRET,
+      jwtSecret,
       {
         expiresIn: '1h',
       },

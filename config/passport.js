@@ -1,9 +1,14 @@
 const passport = require('passport');
 const FacebookTokenStrategy = require('passport-facebook-token');
-//
+const {
+  fbClientId,
+  fbClientSecret,
+} = require('./vars');
+
+
 passport.use(new FacebookTokenStrategy({
-  clientID: process.env.FACEBOOK_CLIENTID,
-  clientSecret: process.env.FACEBOOK_CLIENTSECRET,
+  clientID: fbClientId,
+  clientSecret: fbClientSecret,
   enableProof: true,
 },
 (accessToken, refreshToken, profile, done) => {
