@@ -1,36 +1,15 @@
 const db = require('sqlite');
 const Promise = require('bluebird');
 
-const auth = require('http-auth');
-// Set '' to config path to avoid middleware serving the html page
-// (path must be a string not equal to the wanted route)
-const statusMonitor = require('express-status-monitor')({ path: '' });
 
+const {
+  env,
+  port,
+} = require('./config/vars');
 /**
  * Express configuration.
  */
 const server = require('./config/express');
-
-
-const {
-  authUser,
-  authPassword,
-  env,
-  port,
-} = require('./config/vars');
-
-// server.use(expressStatusMonitor());
-const basic = auth.basic({ realm: 'Monitor Area' }, (user, pass, callback) => {
-  callback(user === authUser && pass === authPassword);
-});
-
-// use the "middleware only" property to manage websockets
-server.use(statusMonitor.middleware);
-server.get('/status', auth.connect(basic), statusMonitor.pageRoute);
-
-
-require('./app/routes')(server);
-
 
 Promise.resolve()
   // First, try to open the database

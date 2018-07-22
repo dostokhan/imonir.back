@@ -12,7 +12,7 @@ const createToken = payload =>
       payload,
       jwtSecret,
       {
-        expiresIn: '1h',
+        expiresIn: '6h',
       },
     )
   );

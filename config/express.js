@@ -10,6 +10,7 @@ const cookieParser = require('cookie-parser');
 // const helmet = require('helmet');
 // INSTALL END
 
+const routes = require('../api/routes/v1');
 const {
   corsOrigin,
 } = require('./vars');
@@ -64,6 +65,8 @@ server.use(passport.initialize());
 // passport.use('facebook', strategies.facebook);
 // passport.use('google', strategies.google);
 
+
+server.use('/v1', routes);
 
 module.exports = server;
 

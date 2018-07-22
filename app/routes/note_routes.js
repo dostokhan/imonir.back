@@ -171,14 +171,16 @@ module.exports = (server) => {
   server.get('/note/:noteslug', lookupNote, lookupNoteContent);
 
   server.get('/note', authenticate(false), async (req, res, next) => {
-    const sql = req.auth ?
-      'SELECT * FROM Note LIMIT 10' : 'SELECT * FROM Note WHERE isPublished=1  LIMIT 10';
-    console.log(req.auth);
+    // const sql = req.auth ?
+    //   'SELECT * FROM note LIMIT 10' : 'SELECT * FROM note WHERE isPublished=1  LIMIT 10';
+    const sql = 'SELECT * FROM note LIMIT 10';
     console.log(sql);
 
     try {
       const notes = await db.all(sql); // <=
-      res.send({ notes });
+      const response = { notes };
+      console.log(response);
+      res.status(200).json(response);
     } catch (err) {
       next(err);
     }
