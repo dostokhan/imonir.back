@@ -29,7 +29,7 @@ router
 
 router
   .route('/list')
-  .get(controller.list);
+  .get(authorize(false), controller.list);
 
 router
   .route('/:id')
@@ -37,8 +37,8 @@ router
   // .put(authorize(LOGGED_USER), validate(replaceUser), controller.replace)
   // .patch(authorize(LOGGED_USER), validate(updateUser), controller.update)
   // .delete(authorize(LOGGED_USER), controller.remove);
-  .patch(authorize(true), controller.update)
-  .delete(authorize(true), controller.remove);
+  .patch(authorize(), controller.update)
+  .delete(authorize(), controller.remove);
 
 
 module.exports = router;

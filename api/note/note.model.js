@@ -28,29 +28,12 @@ const NoteModel = {
     } catch (err) {
       return false;
     }
-
-    // const noteSlug = noteIdentifier;
-    // const selector = !isNaN(noteSlug) ?
-    //   'id = ?' : 'slug = ?';
-    // const sql = `SELECT * FROM note WHERE ${selector}`;
-
-    // console.log(`query: ${sql}`);
-
-    // try {
-    //   const note = await db.all(sql, noteSlug); // db.run(sql, noteId);
-    //   if (note.length === 0) {
-    //     res.status(404).send({ error: 'Note not found' });
-    //   }
-
-    //   console.log(note);
-    //   req.note = note[0];
-    //   next();
-    // } catch (err) {
-    //   renderErr(res, err);
-    // }
   },
-  list: async () => {
-    const sql = 'SELECT * FROM note LIMIT 10';
+  list: async (authorized) => {
+    const sql = authorized ?
+      'SELECT * FROM note LIMIT 10' :
+      'SELECT * FROM note WHERE isPublished=1 LIMIT 10';
+    // const sql = 'SELECT * FROM note LIMIT 10';
     console.log(sql);
 
     try {

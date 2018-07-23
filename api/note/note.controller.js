@@ -81,7 +81,7 @@ exports.update = (req, res, next) => {
  */
 exports.list = async (req, res, next) => {
   try {
-    const notes = await Note.list();
+    const notes = await Note.list(req.auth);
     // const transformedUsers = users.map(user => user.transform());
     res.json({ notes });
   } catch (error) {

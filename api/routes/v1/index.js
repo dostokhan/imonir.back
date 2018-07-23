@@ -1,8 +1,8 @@
 const express = require('express');
 const noteRoutes = require('../../note/note.route');
+const authRoutes = require('../../auth/auth.route');
 const statusMonitor = require('express-status-monitor')({ path: '' });
 const auth = require('http-auth');
-// const authRoutes = require('./auth.route');
 const {
   authUser,
   authPassword,
@@ -29,6 +29,6 @@ router.get('/status', auth.connect(basic), statusMonitor.pageRoute);
 // router.use('/docs', express.static('docs'));
 
 router.use('/notes', noteRoutes);
-// router.use('/auth', authRoutes);
+router.use('/auth', authRoutes);
 
 module.exports = router;
