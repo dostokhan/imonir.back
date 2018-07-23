@@ -9,10 +9,11 @@ const titleToSlug = title => title
   .replace(/[^\w ]+/g, '')
   .replace(/ +/g, '-');
 
-const noteWriter = async (relativePath, content) =>
+const noteWriter = async (slug, content) =>
   new Promise((resolve, reject) => {
-    const fullPath = notePath(relativePath);
+    const fullPath = notePath(slug);
     console.log(`Writing Note file: ${fullPath}`);
+    console.log(content);
 
     return fs.writeFile(fullPath, content, (err) => {
       if (err) {
@@ -26,20 +27,40 @@ const noteWriter = async (relativePath, content) =>
     });
   });
 
-const updateNoteFile = (noteSlug, noteContent) =>
-  noteWriter(noteSlug, noteContent).then(
-    () => {
-      console.log('update note CONTENT written to note file');
-      console.log(noteContent);
-      responseObj.noteId = noteId;
-      return sendResponse();
-    },
-    (err) => {
-      console.log(err);
-      statusCode = 500;
-      responseObj.msg = 'tails on fire';
-      return sendResponse();
+const updateNoteFile = async (noteSlug, noteContent) => {
+  try {
+    noteWriter(noteSlug, noteContent).then(
+      () => true,
+      (err) => {
+        console.log(err);
+        return false;
+        // return sendResponse();
+      });
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+
+  return false;
+};
+
+
+const renameFile = async (oldPath, newPath) =>
+  new Promise((resolve, reject) => {
+    const oldFile = notePath(oldPath);
+    const newFile = notePath(newPath);
+
+    console.log(`Rename file: ${oldFile} => ${newFile}`);
+    fs.rename(oldFile, newFile, (err) => {
+      if (err) {
+        console.warn(err);
+        console.warn('file rename failed');
+        return reject();
+      }
+
+      return resolve();
     });
+  });
 
 const moveNoteFile = async relativePath =>
   new Promise((resolve, reject) => {
@@ -80,20 +101,27 @@ const prepareUpdateQuery = (note) => {
   let query = 'UPDATE note SET';
   let slug = '';
   let needNoteTableUpdate = false;
+  let titleChanged = false;
 
   Object.keys(note).forEach((key) => {
     console.log(`key: ${key}`);
 
     if (key !== 'id') {
       if (key === 'title') {
-        // titleChanged = true;
+        titleChanged = true;
         slug = titleToSlug(note[key]);
         query += ` slug = '${slug}',`;
+        query += ` title = '${note[key]}',`;
         needNoteTableUpdate = true;
       } else if (key !== 'content') {
         query += ` ${key} = '${note[key]}',`;
         needNoteTableUpdate = true;
       }
+
+      // if (key != 'content') {
+      //   needNoteTableUpdate = true;
+      // query += ` ${key} = '${note[key]}',`;
+      // }
     }
   });
 
@@ -104,6 +132,7 @@ const prepareUpdateQuery = (note) => {
     query,
     slug,
     needNoteTableUpdate,
+    titleChanged,
   };
 };
 
@@ -115,7 +144,6 @@ module.exports = {
   updateNoteFile,
   prepareUpdateQuery,
   getNoteContent,
-  // deleteNote,
-  // noteReader,
+  renameFile,
 };
 

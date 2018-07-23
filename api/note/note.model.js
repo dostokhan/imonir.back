@@ -6,6 +6,7 @@ const {
   moveNoteFile,
   updateNoteFile,
   prepareUpdateQuery,
+  renameFile,
 } = require('./note.util');
 
 const NoteModel = {
@@ -98,42 +99,59 @@ const NoteModel = {
     console.log(changes.query);
 
     const updateFile = async (slug, content) => {
+      console.log('UPDATING NOTE FILE');
+
       try {
         await updateNoteFile(slug, content);
-        return true;
+        console.log(note);
+        return { note };
       } catch (error) {
         console.log(error);
         return false;
       }
     };
 
+    if (changes.titleChanged) {
+      try {
+        console.log('TITLE changed');
+        const noteObj = await NoteModel.get(note.id);
+
+        if (!noteObj) {
+          return false;
+        }
+
+        console.log(noteObj);
+        if (noteObj.title !== note.title) {
+          try {
+            const oldSlug = titleToSlug(noteObj.title);
+            const newSlug = titleToSlug(note.title);
+            console.log(`new: ${newSlug} old: ${oldSlug}`);
+            renameFile(oldSlug, newSlug);
+          } catch (error) {
+            console.log(error);
+            return false;
+          }
+        }
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    }
+
     if (changes.needNoteTableUpdate) {
       console.log('NEED TABLE UPDATE');
       try {
         await db.all(changes.query, note.id); // db.run(sql, noteId);
 
-        // if (!updatedNote) {
-        //   statusCode = 404;
-        //   responseObj.msg = 'no idea';
-        // } else {
-        //   // if (titleChanged) {
-        //   //   // remove old note file
-        //   //   deleteNote(req.note.slug);
-        //   // }
         if (note.content) {
           console.log('NEED TO UPDATE CONTENT');
           updateFile(changes.slug, note.content);
         }
 
-        // responseObj.noteId = note.id;
-        // return sendResponse();
-        return true;
+        return { note };
       } catch (error) {
         console.log(error);
         return false;
-        // statusCode = 500;
-        // responseObj.msg = 'tails on fire';
-        // return sendResponse();
       }
     } else if (note.content) {
       updateFile(changes.slug, note.content);
