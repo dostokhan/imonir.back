@@ -16,5 +16,5 @@ volumes:
 networks:
   default:
     external:
-      name: imonir
+      name: fullstack
 
